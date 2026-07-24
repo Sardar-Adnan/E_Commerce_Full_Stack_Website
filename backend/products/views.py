@@ -9,6 +9,7 @@ from .serializers import CategorySerializer, ProductSerializer
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all().order_by('name')
     serializer_class = CategorySerializer
+    lookup_field = 'slug'
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['is_active']
     search_fields = ['name', 'description']
@@ -27,6 +28,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         Prefetch('variants', queryset=ProductVariant.objects.order_by('id')),
     ).order_by('-created_at')
     serializer_class = ProductSerializer
+    lookup_field = 'slug'
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = {
         'category': ['exact'],

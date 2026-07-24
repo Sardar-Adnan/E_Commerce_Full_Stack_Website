@@ -17,6 +17,10 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email', 'username', 'phone_number', 'password']
+        extra_kwargs = {
+            'email': {'validators': []},
+            'username': {'validators': []},
+        }
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():

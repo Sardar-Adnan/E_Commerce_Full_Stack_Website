@@ -64,3 +64,14 @@ class ProductSerializer(serializers.ModelSerializer):
             'updated_at',
         ]
         read_only_fields = ['id', 'slug', 'current_price', 'in_stock', 'created_at', 'updated_at']
+
+    def validate(self, attrs):
+        base_price = attrs.get('base_price')
+        discount_price = attrs.get('discount_price')
+
+        if base_price is not None and discount_price is not None and discount_price >= base_price:
+            raise serializers.ValidationError({
+                'discount_price': 'Discount price must be lower than base price.'
+            })
+
+        return attrs
