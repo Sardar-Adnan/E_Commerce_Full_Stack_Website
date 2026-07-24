@@ -1,4 +1,4 @@
-from django.db import models
+﻿from django.db import models
 from django.utils.text import slugify
 from core.models import TimeStampedModel
 
@@ -70,7 +70,9 @@ class Product(TimeStampedModel):
 
     @property
     def current_price(self):
-        return self.discount_price if self.discount_price else self.base_price
+        if self.discount_price and self.discount_price < self.base_price:
+            return self.discount_price
+        return self.base_price
 
     @property
     def in_stock(self):
