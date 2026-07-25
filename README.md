@@ -58,3 +58,11 @@ Full deployment steps will be added to this README on Day 7.
   (Category, Product, ProductVariant, ProductImage, Cart, CartItem, Order, OrderItem, Address),
   migrations applied, Django Admin registered & themed with Jazzmin, seed data command, verified
   working end-to-end against local Postgres.
+
+- **Day 2:** Backend API endpoints for products, categories, authentication, cart, and orders were
+  implemented with Django REST Framework, including JWT auth, product filtering/search/sorting,
+  and cart/order workflows wired to the database.
+
+- **Day 3:** The customer-facing React storefront was scaffolded with Vite and Tailwind, and the
+  shared app shell, routing, auth/cart contexts, home/products/detail/cart pages, and API client
+  modules were wired together to connect the frontend to the backend.

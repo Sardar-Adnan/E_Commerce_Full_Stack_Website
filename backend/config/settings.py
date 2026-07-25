@@ -4,11 +4,17 @@ Django settings for Leaf & Bloom E-Commerce backend.
 
 from pathlib import Path
 from datetime import timedelta
-from decouple import config, Csv
+from decouple import Config, RepositoryEnv, config as auto_config, Csv
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Force python-decouple to load the .env file explicitly from the BASE_DIR
+try:
+    config = Config(RepositoryEnv(BASE_DIR / '.env'))
+except FileNotFoundError:
+    config = auto_config
 
 # ------------------------------------------------------------------
 # Core / Security
@@ -75,8 +81,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # ------------------------------------------------------------------
-# Database (Postgres locally in dev, Supabase Postgres in production —
-# both configured purely through the DATABASE_URL env var, no code change needed)
+# Database
 # ------------------------------------------------------------------
 DATABASES = {
     'default': dj_database_url.config(
@@ -153,13 +158,13 @@ SIMPLE_JWT = {
 }
 
 # ------------------------------------------------------------------
-# CORS (for the React customer website)
+# CORS
 # ------------------------------------------------------------------
 CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='http://localhost:5173', cast=Csv())
 CORS_ALLOW_CREDENTIALS = True
 
 # ------------------------------------------------------------------
-# Jazzmin (Admin Panel theming)
+# Jazzmin (Admin Panel)
 # ------------------------------------------------------------------
 JAZZMIN_SETTINGS = {
     "site_title": "Leaf & Bloom Admin",

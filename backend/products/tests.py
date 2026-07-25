@@ -1,4 +1,4 @@
-﻿from django.test import TestCase
+from django.test import TestCase
 from rest_framework.test import APIClient
 
 from products.models import Category, Product
@@ -23,6 +23,46 @@ class ProductSerializerValidationTests(TestCase):
             'is_active': True,
             'is_featured': True,
         })
+
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('discount_price', serializer.errors)
+
+    def test_partial_update_rejects_discount_price_above_existing_base_price(self):
+        category = Category.objects.create(name='Indoor Plants', slug='indoor-plants')
+        product = Product.objects.create(
+            category=category,
+            name='Monstera',
+            slug='monstera',
+            description='A test product',
+            base_price='1000.00',
+            discount_price='900.00',
+            sku='MONSTERA-001',
+            stock_quantity=10,
+            is_active=True,
+            is_featured=True,
+        )
+
+        serializer = ProductSerializer(instance=product, data={'discount_price': '1500.00'}, partial=True)
+
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('discount_price', serializer.errors)
+
+    def test_partial_update_rejects_base_price_below_existing_discount_price(self):
+        category = Category.objects.create(name='Indoor Plants', slug='indoor-plants')
+        product = Product.objects.create(
+            category=category,
+            name='Monstera',
+            slug='monstera-2',
+            description='A test product',
+            base_price='1000.00',
+            discount_price='900.00',
+            sku='MONSTERA-002',
+            stock_quantity=10,
+            is_active=True,
+            is_featured=True,
+        )
+
+        serializer = ProductSerializer(instance=product, data={'base_price': '800.00'}, partial=True)
 
         self.assertFalse(serializer.is_valid())
         self.assertIn('discount_price', serializer.errors)

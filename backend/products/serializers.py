@@ -1,4 +1,4 @@
-﻿from rest_framework import serializers
+from rest_framework import serializers
 
 from .models import Category, Product, ProductImage, ProductVariant
 
@@ -66,8 +66,9 @@ class ProductSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'slug', 'current_price', 'in_stock', 'created_at', 'updated_at']
 
     def validate(self, attrs):
-        base_price = attrs.get('base_price')
-        discount_price = attrs.get('discount_price')
+        instance = self.instance
+        base_price = attrs.get('base_price', instance.base_price if instance else None)
+        discount_price = attrs.get('discount_price', instance.discount_price if instance else None)
 
         if base_price is not None and discount_price is not None and discount_price >= base_price:
             raise serializers.ValidationError({
