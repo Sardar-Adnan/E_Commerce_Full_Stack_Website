@@ -1,7 +1,7 @@
 # 🌿 Leaf & Bloom — E-Commerce Web Application
 
 A full-stack e-commerce website for an indoor plants & gardening supplies store, built as a
-7-day project: Customer Website + Admin Panel + Backend API + Database.
+ project: Customer Website + Admin Panel + Backend API + Database.
 
 ## Tech Stack
 
