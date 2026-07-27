@@ -1,4 +1,4 @@
-﻿from decimal import Decimal
+from decimal import Decimal
 
 from django.db import transaction
 from django.db.models import Prefetch
@@ -13,12 +13,14 @@ from accounts.models import Address
 from products.models import Product, ProductVariant
 from .models import Cart, CartItem, Order, OrderItem
 from .serializers import (
+    AdminOrderSerializer,
     CartItemCreateSerializer,
     CartItemSerializer,
     CartItemUpdateSerializer,
     CartSerializer,
     CheckoutSerializer,
     OrderSerializer,
+    OrderStatusUpdateSerializer,
 )
 
 FREE_SHIPPING_THRESHOLD = Decimal('3000')
@@ -223,3 +225,44 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         serializer = OrderSerializer(order)
         return Response(serializer.data)
+
+
+class AdminOrderViewSet(viewsets.ModelViewSet):
+    """Admin-only viewset for managing all orders."""
+    permission_classes = [permissions.IsAdminUser]
+    queryset = Order.objects.select_related('user').prefetch_related(
+        Prefetch('items', queryset=OrderItem.objects.order_by('id'))
+    )
+    serializer_class = AdminOrderSerializer
+    lookup_field = 'order_number'
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['status', 'is_paid', 'payment_method']
+    search_fields = ['order_number', 'user__email', 'shipping_full_name']
+    ordering_fields = ['created_at', 'total']
+    ordering = ['-created_at']
+
+    @action(detail=True, methods=['patch'], url_path='status')
+    def update_status(self, request, order_number=None):
+        order = self.get_object()
+        serializer = OrderStatusUpdateSerializer(instance=order, data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        new_status = serializer.validated_data['status']
+
+        # If cancelling, restore inventory
+        if new_status == Order.Status.CANCELLED and order.status != Order.Status.CANCELLED:
+            with transaction.atomic():
+                for item in order.items.select_related('product', 'variant').all():
+                    if item.variant:
+                        item.variant.stock_quantity += item.quantity
+                        item.variant.save(update_fields=['stock_quantity'])
+                    elif item.product:
+                        item.product.stock_quantity += item.quantity
+                        item.product.save(update_fields=['stock_quantity'])
+                order.status = new_status
+                order.save(update_fields=['status'])
+        else:
+            order.status = new_status
+            order.save(update_fields=['status'])
+
+        return Response(AdminOrderSerializer(order).data)

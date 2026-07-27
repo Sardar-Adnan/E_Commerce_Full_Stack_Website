@@ -1,4 +1,4 @@
-﻿from decimal import Decimal
+from decimal import Decimal
 
 from django.db import transaction
 from django.shortcuts import get_object_or_404
@@ -160,3 +160,32 @@ class CheckoutSerializer(serializers.Serializer):
                 raise serializers.ValidationError('Address does not belong to the requesting user.')
 
         return attrs
+
+
+class AdminOrderSerializer(serializers.ModelSerializer):
+    """Order serializer for admin views — includes customer email."""
+    items = OrderItemSerializer(many=True, read_only=True)
+    customer_email = serializers.EmailField(source='user.email', read_only=True)
+
+    class Meta:
+        model = Order
+        fields = [
+            'id', 'order_number', 'customer_email', 'status', 'payment_method', 'is_paid',
+            'shipping_full_name', 'shipping_phone_number', 'shipping_street_address',
+            'shipping_city', 'shipping_state', 'shipping_postal_code', 'shipping_country',
+            'subtotal', 'shipping_fee', 'total', 'notes', 'items', 'created_at'
+        ]
+        read_only_fields = fields
+
+
+class OrderStatusUpdateSerializer(serializers.Serializer):
+    """Validates order status transitions for admin updates."""
+    status = serializers.ChoiceField(choices=Order.Status.choices)
+
+    def validate_status(self, value):
+        instance = self.instance
+        if instance and instance.status == Order.Status.CANCELLED:
+            raise serializers.ValidationError('Cannot change status of a cancelled order.')
+        if instance and instance.status == Order.Status.DELIVERED:
+            raise serializers.ValidationError('Cannot change status of a delivered order.')
+        return value

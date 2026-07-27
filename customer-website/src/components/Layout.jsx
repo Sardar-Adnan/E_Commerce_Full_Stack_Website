@@ -1,18 +1,15 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet } from 'react-router-dom';
+import Navbar from './Navbar';
+import Footer from './Footer';
 
 export default function Layout() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="p-4 border-b">
-        <h1 className="text-xl font-bold">Leaf & Bloom</h1>
-      </header>
-      <main className="flex-1 p-4">
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <Navbar />
+      <main className="flex-1">
         <Outlet />
       </main>
-      <footer className="p-4 border-t text-center text-sm">
-        © Leaf & Bloom
-      </footer>
+      <Footer />
     </div>
   );
 }
