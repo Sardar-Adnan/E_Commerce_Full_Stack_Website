@@ -11,10 +11,23 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = ProductImage
         fields = ['id', 'image', 'alt_text', 'is_primary']
         read_only_fields = ['id']
+
+    def get_image(self, obj):
+        if not obj.image:
+            return ""
+        url = str(obj.image)
+        if url.startswith('http://') or url.startswith('https://'):
+            return url
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(obj.image.url)
+        return obj.image.url
 
 
 class ProductVariantSerializer(serializers.ModelSerializer):

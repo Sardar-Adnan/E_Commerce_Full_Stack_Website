@@ -26,7 +26,15 @@ class ProductSummarySerializer(serializers.ModelSerializer):
 
     def get_primary_image(self, obj):
         image = obj.images.filter(is_primary=True).first() or obj.images.first()
-        return image.image.url if image and image.image else None
+        if not image or not image.image:
+            return None
+        url = str(image.image)
+        if url.startswith('http://') or url.startswith('https://'):
+            return url
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(image.image.url)
+        return image.image.url
 
 
 class ProductVariantSummarySerializer(serializers.ModelSerializer):
@@ -148,11 +156,19 @@ class CheckoutSerializer(serializers.Serializer):
     notes = serializers.CharField(required=False, allow_blank=True)
 
     def validate(self, attrs):
+        if 'payment_method' in attrs and isinstance(attrs['payment_method'], str):
+            attrs['payment_method'] = attrs['payment_method'].lower()
+
         if attrs.get('address_id') is None:
-            required_inline_fields = ['full_name', 'phone_number', 'street_address', 'city', 'postal_code', 'country']
+            required_inline_fields = ['full_name', 'phone_number', 'street_address', 'city']
             missing = [field for field in required_inline_fields if not attrs.get(field)]
             if missing:
-                raise serializers.ValidationError('Provide either address_id or full inline shipping details.')
+                readable = ", ".join([f.replace('_', ' ').title() for f in missing])
+                raise serializers.ValidationError(f"Missing required shipping fields: {readable}")
+            if not attrs.get('postal_code'):
+                attrs['postal_code'] = '54000'
+            if not attrs.get('country'):
+                attrs['country'] = 'Pakistan'
         else:
             request = self.context.get('request')
             address = attrs['address_id']

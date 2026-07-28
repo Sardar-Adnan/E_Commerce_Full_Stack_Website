@@ -6,6 +6,11 @@ import PriceDisplay from '../components/PriceDisplay';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyState from '../components/EmptyState';
 
+const formatImg = (url) => {
+  if (!url) return '';
+  return url.startsWith('/media/http') ? url.replace('/media/', '') : url;
+};
+
 export default function Cart() {
   const { cart, loading, error, updateItemQuantity, removeItem, clearCart } = useCart();
   const { isAuthenticated } = useAuth();
@@ -68,7 +73,15 @@ export default function Cart() {
                 {/* Image */}
                 <Link to={`/products/${item.product?.slug}`} className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-lg overflow-hidden shrink-0">
                   {item.product?.primary_image ? (
-                    <img src={item.product.primary_image} alt={item.product.name} className="w-full h-full object-cover" />
+                    <img
+                      src={formatImg(item.product.primary_image)}
+                      alt={item.product.name}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80';
+                      }}
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl">🌿</div>
                   )}

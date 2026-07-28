@@ -3,7 +3,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { checkout } from '../api/orders';
-import PriceDisplay from '../components/PriceDisplay';
 
 export default function Checkout() {
   const { cart, fetchCart } = useCart();
@@ -11,14 +10,14 @@ export default function Checkout() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    shipping_full_name: user?.username || '',
-    shipping_phone_number: user?.phone_number || '',
-    shipping_street_address: '',
-    shipping_city: 'Lahore',
-    shipping_state: 'Punjab',
-    shipping_postal_code: '54000',
-    shipping_country: 'Pakistan',
-    payment_method: 'COD',
+    full_name: user?.username || '',
+    phone_number: user?.phone_number || '',
+    street_address: '',
+    city: 'Attock',
+    state: 'Punjab',
+    postal_code: '54000',
+    country: 'Pakistan',
+    payment_method: 'cod',
     notes: '',
   });
 
@@ -95,16 +94,41 @@ export default function Checkout() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
+    const payload = {
+      full_name: formData.full_name,
+      phone_number: formData.phone_number,
+      street_address: formData.street_address,
+      city: formData.city,
+      state: formData.state,
+      postal_code: formData.postal_code,
+      country: formData.country,
+      payment_method: (formData.payment_method || 'cod').toLowerCase(),
+      notes: formData.notes,
+    };
+
     try {
-      const { data } = await checkout(formData);
+      const { data } = await checkout(payload);
       setCompletedOrder(data);
-      await fetchCart(); // Refresh empty cart
+      await fetchCart();
     } catch (err) {
       const errData = err.response?.data;
-      if (typeof errData === 'object' && errData !== null) {
-        const firstKey = Object.keys(errData)[0];
-        const val = errData[firstKey];
-        setError(Array.isArray(val) ? `${firstKey}: ${val[0]}` : String(val));
+      const rawErrors = errData?.errors || errData;
+
+      if (rawErrors && typeof rawErrors === 'object') {
+        const messages = [];
+        Object.entries(rawErrors).forEach(([key, val]) => {
+          const msg = Array.isArray(val) ? val.join(', ') : String(val);
+          if (key === 'non_field_errors' || key === 'detail') {
+            messages.push(msg);
+          } else {
+            const label = key.replace(/_/g, ' ');
+            messages.push(`${label.charAt(0).toUpperCase() + label.slice(1)}: ${msg}`);
+          }
+        });
+        setError(messages.join(' • ') || errData?.message || 'Checkout failed. Please check shipping details.');
+      } else if (typeof errData?.message === 'string') {
+        setError(errData.message);
       } else {
         setError('Checkout failed. Please check your shipping details.');
       }
@@ -122,15 +146,13 @@ export default function Checkout() {
       <h1 className="text-3xl font-extrabold text-gray-900 mb-8">Checkout</h1>
 
       {error && (
-        <div className="bg-red-50 text-red-700 text-sm p-4 rounded-xl border border-red-200 mb-6">
+        <div className="bg-red-50 text-red-700 text-sm p-4 rounded-xl border border-red-200 mb-6 font-medium">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Shipping & Payment details */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Shipping Form */}
           <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-4">
             <h2 className="text-xl font-bold text-gray-900 mb-2">Shipping Information</h2>
 
@@ -139,9 +161,9 @@ export default function Checkout() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
                 <input
                   type="text"
-                  name="shipping_full_name"
+                  name="full_name"
                   required
-                  value={formData.shipping_full_name}
+                  value={formData.full_name}
                   onChange={handleChange}
                   className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:outline-none"
                 />
@@ -151,9 +173,9 @@ export default function Checkout() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
                 <input
                   type="text"
-                  name="shipping_phone_number"
+                  name="phone_number"
                   required
-                  value={formData.shipping_phone_number}
+                  value={formData.phone_number}
                   onChange={handleChange}
                   className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:outline-none"
                 />
@@ -164,11 +186,11 @@ export default function Checkout() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
               <input
                 type="text"
-                name="shipping_street_address"
+                name="street_address"
                 required
-                value={formData.shipping_street_address}
+                value={formData.street_address}
                 onChange={handleChange}
-                placeholder="123 Green Street, Phase 5"
+                placeholder="123 Main City Road"
                 className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:outline-none"
               />
             </div>
@@ -178,9 +200,9 @@ export default function Checkout() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
                 <input
                   type="text"
-                  name="shipping_city"
+                  name="city"
                   required
-                  value={formData.shipping_city}
+                  value={formData.city}
                   onChange={handleChange}
                   className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:outline-none"
                 />
@@ -190,9 +212,9 @@ export default function Checkout() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">State / Province</label>
                 <input
                   type="text"
-                  name="shipping_state"
+                  name="state"
                   required
-                  value={formData.shipping_state}
+                  value={formData.state}
                   onChange={handleChange}
                   className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:outline-none"
                 />
@@ -202,9 +224,9 @@ export default function Checkout() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
                 <input
                   type="text"
-                  name="shipping_postal_code"
+                  name="postal_code"
                   required
-                  value={formData.shipping_postal_code}
+                  value={formData.postal_code}
                   onChange={handleChange}
                   className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:outline-none"
                 />
@@ -224,16 +246,15 @@ export default function Checkout() {
             </div>
           </div>
 
-          {/* Payment Options */}
           <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-4">
             <h2 className="text-xl font-bold text-gray-900 mb-2">Payment Method</h2>
             <div className="space-y-3">
-              <label className="flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all hover:bg-gray-50 border-primary-500 bg-primary-50/30">
+              <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${formData.payment_method === 'cod' ? 'border-primary-500 bg-primary-50/30' : 'border-gray-200'}`}>
                 <input
                   type="radio"
                   name="payment_method"
-                  value="COD"
-                  checked={formData.payment_method === 'COD'}
+                  value="cod"
+                  checked={formData.payment_method === 'cod'}
                   onChange={handleChange}
                   className="w-4 h-4 text-primary-600 focus:ring-primary-500"
                 />
@@ -243,12 +264,12 @@ export default function Checkout() {
                 </div>
               </label>
 
-              <label className="flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all hover:bg-gray-50 border-gray-200">
+              <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${formData.payment_method === 'card' ? 'border-primary-500 bg-primary-50/30' : 'border-gray-200'}`}>
                 <input
                   type="radio"
                   name="payment_method"
-                  value="CARD"
-                  checked={formData.payment_method === 'CARD'}
+                  value="card"
+                  checked={formData.payment_method === 'card'}
                   onChange={handleChange}
                   className="w-4 h-4 text-primary-600 focus:ring-primary-500"
                 />
@@ -261,7 +282,6 @@ export default function Checkout() {
           </div>
         </div>
 
-        {/* Order Summary sidebar */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-6 sticky top-24">
             <h2 className="text-xl font-bold text-gray-900">Order Summary</h2>

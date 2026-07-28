@@ -55,7 +55,8 @@ export default function About() {
         </p>
         <Link
           to="/products"
-          className="inline-block px-8 py-4 bg-white text-primary-900 font-bold rounded-2xl hover:bg-primary-50 transition-colors shadow-lg"
+          style={{ color: '#064e3b', backgroundColor: '#ffffff' }}
+          className="inline-block px-8 py-4 font-extrabold rounded-2xl hover:bg-gray-100 transition-colors shadow-lg"
         >
           Explore Collection
         </Link>

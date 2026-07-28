@@ -56,11 +56,12 @@ export default function Home() {
             </p>
             <Link
               to="/products"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-primary-800 font-bold rounded-xl hover:bg-primary-50 transition-all transform hover:scale-105 shadow-lg"
+              style={{ color: '#064e3b', backgroundColor: '#ffffff' }}
+              className="inline-flex items-center gap-2 px-8 py-4 font-extrabold rounded-xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg"
             >
               Shop Now
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              <svg className="w-5 h-5 text-emerald-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             </Link>
           </div>
