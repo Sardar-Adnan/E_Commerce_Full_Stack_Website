@@ -5,6 +5,9 @@ export default function ProductCard({ product }) {
   const primaryImage = product.images?.find(img => img.is_primary) || product.images?.[0];
   const isOutOfStock = product.stock_quantity === 0 && !product.in_stock;
 
+  const rawImage = primaryImage?.image || '';
+  const imageUrl = rawImage.startsWith('/media/http') ? rawImage.replace('/media/', '') : rawImage;
+
   return (
     <Link
       to={`/products/${product.slug}`}
@@ -12,10 +15,14 @@ export default function ProductCard({ product }) {
     >
       {/* Image */}
       <div className="relative aspect-square bg-gray-50 overflow-hidden">
-        {primaryImage ? (
+        {imageUrl ? (
           <img
-            src={primaryImage.image}
-            alt={primaryImage.alt_text || product.name}
+            src={imageUrl}
+            alt={primaryImage?.alt_text || product.name}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = 'https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80';
+            }}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (

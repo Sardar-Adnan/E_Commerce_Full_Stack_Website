@@ -26,7 +26,7 @@ export default function Contact() {
               <span className="text-xl">📍</span>
               <div>
                 <strong className="block text-gray-900 font-semibold">Store Address</strong>
-                <p className="text-sm">Main Boulevard, Gulberg III, Lahore, Pakistan</p>
+                <p className="text-sm">Main City Road, Attock, Pakistan</p>
               </div>
             </div>
 
@@ -42,7 +42,7 @@ export default function Contact() {
               <span className="text-xl">📞</span>
               <div>
                 <strong className="block text-gray-900 font-semibold">Call Us</strong>
-                <p className="text-sm">+92 300 1234567 (Mon-Sat, 9am - 7pm PKT)</p>
+                <p className="text-sm">03001234567 (Mon-Sat, 9am - 7pm PKT)</p>
               </div>
             </div>
           </div>

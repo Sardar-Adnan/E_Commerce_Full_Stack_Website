@@ -38,8 +38,8 @@ export default function Footer() {
             <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Support</h4>
             <ul className="space-y-2.5">
               <li><span className="text-sm">📧 hello@leafandbloom.pk</span></li>
-              <li><span className="text-sm">📞 +92 300 1234567</span></li>
-              <li><span className="text-sm">📍 Lahore, Pakistan</span></li>
+              <li><span className="text-sm">📞 03001234567</span></li>
+              <li><span className="text-sm">📍 Attock, Pakistan</span></li>
             </ul>
           </div>
         </div>

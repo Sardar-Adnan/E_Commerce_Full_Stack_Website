@@ -7,6 +7,11 @@ import PriceDisplay from '../components/PriceDisplay';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 
+const formatImg = (url) => {
+  if (!url) return '';
+  return url.startsWith('/media/http') ? url.replace('/media/', '') : url;
+};
+
 const LIGHT_LABELS = { low: '🌙 Low Light', medium: '☁️ Medium Light', bright: '🌤️ Bright Indirect', direct: '☀️ Direct Sunlight' };
 
 export default function ProductDetail() {
@@ -84,8 +89,15 @@ export default function ProductDetail() {
         <div>
           <div className="aspect-square bg-gray-100 rounded-2xl overflow-hidden mb-4">
             {images.length > 0 ? (
-              <img src={images[mainImage]?.image} alt={images[mainImage]?.alt_text || product.name}
-                className="w-full h-full object-cover" />
+              <img
+                src={formatImg(images[mainImage]?.image)}
+                alt={images[mainImage]?.alt_text || product.name}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80';
+                }}
+                className="w-full h-full object-cover"
+              />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gray-300">
                 <svg className="w-24 h-24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
