@@ -137,9 +137,30 @@ export default function Checkout() {
     }
   };
 
+  const [promoCode, setPromoCode] = useState('');
+  const [discount, setDiscount] = useState(0);
+  const [promoMsg, setPromoMsg] = useState(null);
+
+  const handleApplyPromo = (e) => {
+    e.preventDefault();
+    setPromoMsg(null);
+    const code = promoCode.trim().toUpperCase();
+    if (code === 'LEAF10') {
+      const discAmt = Math.round(subtotal * 0.10);
+      setDiscount(discAmt);
+      setPromoMsg({ type: 'success', text: '🎉 Promo LEAF10 applied (10% off)!' });
+    } else if (code === 'WELCOME200') {
+      const discAmt = Math.min(200, subtotal);
+      setDiscount(discAmt);
+      setPromoMsg({ type: 'success', text: '🎉 Promo WELCOME200 applied (Rs. 200 off)!' });
+    } else {
+      setPromoMsg({ type: 'error', text: 'Invalid promo code. Try LEAF10 or WELCOME200.' });
+    }
+  };
+
   const subtotal = parseFloat(cart.total_price || 0);
-  const shippingFee = subtotal > 3000 ? 0 : 250;
-  const grandTotal = subtotal + shippingFee;
+  const shippingFee = subtotal >= 3000 ? 0 : 200;
+  const grandTotal = Math.max(0, subtotal + shippingFee - discount);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in">
@@ -299,11 +320,42 @@ export default function Checkout() {
               ))}
             </div>
 
+            <div className="border-t border-gray-200 pt-4">
+              <label className="block text-xs font-semibold text-gray-600 mb-1">Promo Code</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="e.g. LEAF10"
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value)}
+                  className="w-full px-3 py-1.5 border border-gray-200 rounded-lg text-sm uppercase focus:ring-1 focus:ring-primary-500 outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={handleApplyPromo}
+                  className="px-3 py-1.5 bg-gray-800 hover:bg-gray-900 text-white font-semibold rounded-lg text-xs transition-colors"
+                >
+                  Apply
+                </button>
+              </div>
+              {promoMsg && (
+                <p className={`text-xs mt-1.5 font-medium ${promoMsg.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+                  {promoMsg.text}
+                </p>
+              )}
+            </div>
+
             <div className="border-t border-gray-200 pt-4 space-y-2 text-sm">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
                 <span>Rs. {subtotal.toLocaleString()}</span>
               </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-green-600 font-semibold">
+                  <span>Discount</span>
+                  <span>- Rs. {discount.toLocaleString()}</span>
+                </div>
+              )}
               <div className="flex justify-between text-gray-600">
                 <span>Shipping</span>
                 <span>{shippingFee === 0 ? <span className="text-green-600 font-semibold">FREE</span> : `Rs. ${shippingFee}`}</span>

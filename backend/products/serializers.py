@@ -79,13 +79,21 @@ class ProductSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'slug', 'current_price', 'in_stock', 'created_at', 'updated_at']
 
     def validate(self, attrs):
+        from decimal import Decimal, InvalidOperation
+
         instance = self.instance
         base_price = attrs.get('base_price', instance.base_price if instance else None)
         discount_price = attrs.get('discount_price', instance.discount_price if instance else None)
 
-        if base_price is not None and discount_price is not None and discount_price >= base_price:
-            raise serializers.ValidationError({
-                'discount_price': 'Discount price must be lower than base price.'
-            })
+        if base_price is not None and discount_price is not None:
+            try:
+                b_price = Decimal(str(base_price))
+                d_price = Decimal(str(discount_price))
+                if d_price >= b_price:
+                    raise serializers.ValidationError({
+                        'discount_price': 'Discount price must be lower than base price.'
+                    })
+            except (InvalidOperation, TypeError):
+                pass
 
         return attrs
