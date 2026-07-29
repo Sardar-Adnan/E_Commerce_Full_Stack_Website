@@ -196,13 +196,6 @@ In production or remote mode, the backend connects directly to **Supabase Postgr
 - **`orders_cart` & `orders_cartitem`**: Active customer shopping carts.
 - **`orders_order` & `orders_orderitem`**: Placed customer orders with order status, shipping snapshots (Attock, Pakistan), and payment methods (`cod` / `card`).
 
----
-
-## 📞 Support & Location Details
-
-- **Store Location**: Main City Road, Attock, Pakistan
-- **Contact Phone**: `03001234567`
-- **Email Support**: `support@leafandbloom.pk`
 
 ---
 
