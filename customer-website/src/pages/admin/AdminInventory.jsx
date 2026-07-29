@@ -391,6 +391,17 @@ export default function AdminInventory() {
               </div>
 
               <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Image URL (Optional)</label>
+                <input
+                  type="url"
+                  value={formData.image_url || ''}
+                  onChange={e => setFormData({ ...formData, image_url: e.target.value })}
+                  placeholder="https://images.unsplash.com/photo-..."
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:outline-none text-sm"
+                />
+              </div>
+
+              <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
                 <textarea
                   rows={2}

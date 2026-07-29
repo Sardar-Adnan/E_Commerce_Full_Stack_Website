@@ -9,6 +9,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [navSearch, setNavSearch] = useState('');
 
   const navLinks = [
     { to: '/', label: 'Home' },
@@ -23,6 +24,14 @@ export default function Navbar() {
     navigate('/');
   };
 
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (navSearch.trim()) {
+      navigate(`/products?search=${encodeURIComponent(navSearch.trim())}`);
+      setNavSearch('');
+    }
+  };
+
   return (
     <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200/60 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -33,6 +42,22 @@ export default function Navbar() {
             <span className="text-xl font-bold text-primary-800">Leaf & Bloom</span>
           </Link>
 
+          {/* Search bar */}
+          <form onSubmit={handleSearchSubmit} className="hidden sm:block flex-1 max-w-xs mx-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search plants..."
+                value={navSearch}
+                onChange={(e) => setNavSearch(e.target.value)}
+                className="w-full pl-9 pr-4 py-1.5 bg-gray-100/80 border border-transparent rounded-full text-xs focus:bg-white focus:border-primary-500 focus:outline-none transition-all"
+              />
+              <svg className="w-4 h-4 text-gray-400 absolute left-3 top-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </form>
+
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1">
             {navLinks.map(link => (
@@ -40,7 +65,7 @@ export default function Navbar() {
                 key={link.to}
                 to={link.to}
                 className={({ isActive }) =>
-                  `px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     isActive ? 'text-primary-700 bg-primary-50' : 'text-gray-600 hover:text-primary-700 hover:bg-gray-50'
                   }`
                 }
@@ -83,6 +108,9 @@ export default function Navbar() {
                     <div className="px-4 py-2 border-b border-gray-100">
                       <p className="text-sm font-medium text-gray-900 truncate">{user?.email}</p>
                     </div>
+                    <Link to="/orders" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                      📦 My Orders
+                    </Link>
                     {isAdmin && (
                       <Link to="/admin/orders" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                         📊 Admin Panel
@@ -125,6 +153,15 @@ export default function Navbar() {
       {mobileOpen && (
         <div className="md:hidden border-t border-gray-200 bg-white">
           <div className="px-4 py-3 space-y-1">
+            <form onSubmit={handleSearchSubmit} className="mb-3">
+              <input
+                type="text"
+                placeholder="Search plants..."
+                value={navSearch}
+                onChange={(e) => setNavSearch(e.target.value)}
+                className="w-full px-4 py-2 bg-gray-100 border border-transparent rounded-lg text-sm focus:outline-none"
+              />
+            </form>
             {navLinks.map(link => (
               <NavLink
                 key={link.to}
@@ -142,6 +179,9 @@ export default function Navbar() {
             <hr className="my-2" />
             {isAuthenticated ? (
               <>
+                <Link to="/orders" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">
+                  📦 My Orders
+                </Link>
                 {isAdmin && (
                   <Link to="/admin/orders" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">
                     📊 Admin Panel
