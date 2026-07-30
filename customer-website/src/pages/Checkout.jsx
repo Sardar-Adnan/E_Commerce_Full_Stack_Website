@@ -24,6 +24,9 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [completedOrder, setCompletedOrder] = useState(null);
+  const [promoCode, setPromoCode] = useState('');
+  const [discount, setDiscount] = useState(0);
+  const [promoMsg, setPromoMsg] = useState(null);
 
   if (!isAuthenticated) {
     return (
@@ -136,10 +139,6 @@ export default function Checkout() {
       setLoading(false);
     }
   };
-
-  const [promoCode, setPromoCode] = useState('');
-  const [discount, setDiscount] = useState(0);
-  const [promoMsg, setPromoMsg] = useState(null);
 
   const handleApplyPromo = (e) => {
     e.preventDefault();
