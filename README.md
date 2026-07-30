@@ -1,27 +1,28 @@
 # 🌿 Leaf & Bloom — Full-Stack E-Commerce Platform
 
-A production-grade, full-stack e-commerce web application for an indoor plant nursery and gardening supplies store based in **Attock, Pakistan**. Built with a **Django REST Framework** backend, a **React (Vite) + Tailwind CSS** frontend, and **Supabase (PostgreSQL)** database integration.
+A production-grade, full-stack e-commerce web application for an indoor plant nursery and gardening supplies store based in **Attock, Pakistan**. Built with a **Django REST Framework** backend (deployed on **PythonAnywhere** using **SQLite**), a **React (Vite) + Tailwind CSS** frontend (deployed on **Vercel**), and complete order lifecycle management.
 
 ---
 
 ## 🚀 Key Features
 
 ### 🛒 Customer Storefront
-- **Responsive Modern UI**: Built with dynamic animations, glassmorphism, pet-safety badges, and dark green color palette.
-- **Product Catalog & Filtering**: Search by keyword, filter by categories, price range, pet safety, or light requirements, and sort by price/newest.
-- **Interactive Product Detail & Gallery**: High-res gallery images with automatic `onError` fallback protection, pet-safety tags, light requirement indicators, and size/pot variant selectors.
+- **Responsive Modern UI**: Built with dynamic animations, pet-safety badges, plant care indicators, and dark green nursery design tokens.
+- **Product Catalog & Filtering**: Search plants via global top navbar, filter by categories, price range, pet safety, or light requirements, and sort by price/newest.
+- **Interactive Product Detail**: High-res gallery images with fallback protection, pet-safety tags, light requirement badges, and size/pot variant selectors.
 - **Persistent Shopping Cart**: Real-time item additions, quantity adjustments, line subtotal calculations, and cart clearance.
-- **Seamless Checkout**: Address collection (defaulting to Attock, Pakistan), shipping fee calculation, Cash on Delivery (COD) / Credit Card payment options, and instant order confirmation screens.
+- **Seamless Checkout & Promo Engine**: Shipping address collection, synchronized shipping fee calculation (Rs. 200 standard, free $\ge$ Rs. 3,000), Cash on Delivery (COD) / Card options, and promo coupon support (`LEAF10` for 10% off, `WELCOME200` for Rs. 200 off).
+- **Customer Order Tracking & Cancellation (`/orders`)**: Dedicated customer portal to track order status (`Pending`, `Processing`, `Shipped`, `Delivered`, `Cancelled`) and perform self-service order cancellations with instant inventory restoration.
 - **JWT Authentication**: User registration, login, token refresh, and persistent user sessions.
 
 ### 📊 Dual Admin Management System
-- **React Frontend Admin Dashboard (`/admin/inventory`)**:
-  - ➕ **Visual Add Product Modal**: Form to add plants, pots, fertilizers, SKU, stock quantity, prices, pet safety flags, and care instructions.
-  - ✏️ **Visual Edit Product**: Real-time inline editing of existing catalog items.
+- **React Frontend Admin Hub (`/admin/inventory`)**:
+  - ➕ **Visual Add Product Modal**: Form to add plants, pots, fertilizers, SKU, stock quantity, prices, image URLs, pet safety flags, and care instructions.
+  - ✏️ **Visual Edit Product**: Real-time inline editing of existing catalog items and image links.
   - 🗑️ **Delete / Deactivate Products**: Quick catalog maintenance.
   - 📦 **Order Management (`/admin/orders`)**: View customer orders, update order status (`Pending`, `Processing`, `Shipped`, `Delivered`, `Cancelled`), and filter orders.
   - 👥 **Customer Analytics (`/admin/customers`)**: Customer statistics, order count, and total spend tracking.
-- **Django Admin Portal (`http://127.0.0.1:8000/admin/`)**:
+- **Django Admin Portal (`https://sardaradnan.pythonanywhere.com/admin/`)**:
   - Built-in Django CRUD panel themed with **Jazzmin**.
   - Direct database model management, user permissions, order item inspection, and raw catalog edits.
 
@@ -31,10 +32,12 @@ A production-grade, full-stack e-commerce web application for an indoor plant nu
 
 | Layer | Technology |
 | :--- | :--- |
-| **Backend Framework** | Python 3.13 + Django 5.x |
+| **Backend Framework** | Python 3.12 + Django 5.x / 6.x |
 | **REST API** | Django REST Framework (DRF) + SimpleJWT |
-| **Database** | PostgreSQL (Supabase Cloud) / SQLite (Local fallback) |
+| **Database** | SQLite (`db.sqlite3`) / `dj_database_url` |
+| **Backend Hosting** | PythonAnywhere (Free Tier) |
 | **Frontend Framework** | React 18 + Vite |
+| **Frontend Hosting** | Vercel (Free Tier) |
 | **Styling** | Tailwind CSS v4 + Custom Design Tokens |
 | **HTTP Client** | Axios with silent token refresh interceptor |
 | **Routing** | React Router DOM v6 |
@@ -61,7 +64,7 @@ Task_2/
 │   │   ├── api/                    # Axios API Modules (auth, products, cart, orders, admin)
 │   │   ├── components/             # Reusable UI (Navbar, Footer, ProductCard, PriceDisplay, etc.)
 │   │   ├── context/                # AuthContext & CartContext
-│   │   ├── pages/                  # Storefront Pages (Home, Products, ProductDetail, Cart, Checkout, About, Contact)
+│   │   ├── pages/                  # Storefront Pages (Home, Products, ProductDetail, Cart, Checkout, MyOrders, About, Contact)
 │   │   │   └── admin/              # Admin Hub Pages (AdminOrders, AdminInventory, AdminCustomers)
 │   │   ├── App.jsx                 # App Routing
 │   │   └── main.jsx                # React Entry Point
@@ -77,7 +80,7 @@ Task_2/
 ## ⚡ Getting Started & Local Setup
 
 ### 1. Prerequisites
-- **Python 3.10+**
+- **Python 3.10+** (Python 3.12 recommended)
 - **Node.js 18+** & **npm**
 
 ---
@@ -159,42 +162,34 @@ Task_2/
 
 ---
 
-## 🔑 Pre-Configured Credentials
+## 🔑 Pre-Configured Demo Credentials
 
-Use these credentials to test customer purchases or log into the Admin Hub:
+Use these credentials to test storefront purchases, promo codes, or log into the Admin Hub:
 
 | Account Type | Email | Password | Privileges |
 | :--- | :--- | :--- | :--- |
 | **Admin / Staff** | `admin@leafandbloom.pk` | `admin123password` | Full Access to Admin Hub & Django Admin |
-| **Demo Customer** | `customer@leafandbloom.pk` | `customer123password` | Storefront Shopping & Checkout |
+| **Demo Customer** | `customer@leafandbloom.pk` | `customer123password` | Storefront Shopping, Checkout, & Order History |
 
 ---
 
-## 🖥️ How to Use the Admin Systems
+## 🖥️ Live Deployed Links
 
-### 1. React Visual Admin Hub (`http://localhost:5173/admin/inventory`)
-- Sign in with `admin@leafandbloom.pk` / `admin123password`.
-- Click your profile initial (`D`) in the navbar -> **📊 Admin Panel**.
-- **Inventory Tab**: Click **`+ Add Product`** to open the creation modal, click **`✏️ Edit`** to update prices/stock, or click **`🗑️ Delete`** to remove a product.
-- **Orders Tab**: View placed customer orders, update order status (`Processing`, `Shipped`, `Delivered`, `Cancelled`), and review shipping addresses.
-- **Customers Tab**: Inspect registered customer statistics and lifetime spend.
-
-### 2. Django Admin Portal (`http://127.0.0.1:8000/admin/`)
-- Log in with `admin@leafandbloom.pk` / `admin123password`.
-- View raw database tables, manage user permissions, and inspect JSON payloads.
+* **Live Storefront (Vercel)**: `https://leaf-and-bloom-website.vercel.app`
+* **Live Django Admin (PythonAnywhere)**: `https://sardaradnan.pythonanywhere.com/admin/`
 
 ---
 
-## 🗄️ Database Architecture (Supabase / PostgreSQL)
+## 🗄️ Database Architecture (SQLite)
 
-In production or remote mode, the backend connects directly to **Supabase PostgreSQL**:
-- **`accounts_user`**: Users, email unique constraints, hashed passwords, staff flags.
-- **`products_category`**: Category titles, descriptions, and slugs.
-- **`products_product`**: Product catalog, prices, discount prices, SKUs, pet safety flags, stock quantities.
+The backend uses **SQLite** (`db.sqlite3`) for efficient, lightweight local and cloud deployment:
+- **`accounts_user`**: Custom user model with email unique constraints, hashed passwords, and staff flags.
+- **`products_category`**: Category titles, descriptions, images, and slugs.
+- **`products_product`**: Plant catalog, base prices, discount prices, SKUs, pet safety flags, stock quantities.
 - **`products_productvariant`**: Pot sizes, materials, price overrides, and variant inventory.
 - **`products_productimage`**: Primary gallery images and fallback URLs.
 - **`orders_cart` & `orders_cartitem`**: Active customer shopping carts.
-- **`orders_order` & `orders_orderitem`**: Placed customer orders with order status, shipping snapshots (Attock, Pakistan), and payment methods (`cod` / `card`).
+- **`orders_order` & `orders_orderitem`**: Customer orders with status tracking (`Pending`, `Confirmed`, `Processing`, `Shipped`, `Delivered`, `Cancelled`), shipping snapshots (Attock, Pakistan), and payment methods (`cod` / `card`).
 
 ---
 
@@ -208,7 +203,7 @@ In production or remote mode, the backend connects directly to **Supabase Postgr
 
 ## 🌿 Git Branching & Repository Workflow
 
-- **`main`**: Production-ready, fully tested stable release.
+- **`main`**: Production-ready release branch.
 - **`dev`**: Active development branch.
 
 ### Pushing Changes:
